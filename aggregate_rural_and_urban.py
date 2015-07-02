@@ -22,28 +22,39 @@
 # function in the class that takes a line of text from the file and returns structured
 # data that is useful and easy to understand.
 
+# for these two dicts
 urban_ts = dict()
 rural_ts = dict()
-for i in [1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011]:
-    urban_ts[i] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    rural_ts[i] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+# for every year
+for year in range(1995,2012):
+    # create a list with a 0 for each week
+    urban_ts[year] = [0]*52 # number of weeks in year?
+    rural_ts[year] = [0]*52
 
 header_line = True
+# iterate through each line in the file
 for line in file("all_cases.csv"):
+    # we need to skip the first (header) line
     if header_line == True:
         header_line = False
         continue
-    parts = line.strip().split(',')
-    t = int(parts[0])
-    muni_num = parts[4]
-    data = map(int, parts[5:])
-    if muni_num in ['050','101','041']: # urban municipality codes
-        for i in range(0,52):
-            urban_ts[t][i] += data[i]
-    else:
-        for i in range(0,52):
-            rural_ts[t][i] += data[i]
 
+    # parse the line into a list of strings
+    parts = line.strip().split(',')
+    year = int(parts[0])
+    muni_num = parts[4]
+    case_time_series = map(int, parts[5:])
+    if muni_num in ['050','101','041']: # urban municipality codes
+        for week in range(0,52):
+            urban_ts[year][week] += case_time_series[week]
+    else:
+        # it's a rural municipality
+        for week in range(0,52):
+            rural_ts[year][week] += case_time_series[week]
+
+print urban_ts[2011]
+print rural_ts[2011]
+exit()
 header_line = True
 print "location total_cases"
 for line in file("all_cases.csv"):
@@ -60,6 +71,6 @@ print
 print
 print
 print "year week urban rural"
-for i in [1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011]:
+for year in range(1995,2012):
     for week in range(0,52):
-        print i, week+1, urban_ts[i][week], rural_ts[i][week]
+        print year, week+1, urban_ts[year][week], rural_ts[year][week]
